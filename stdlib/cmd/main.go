@@ -79,8 +79,7 @@ func (ts *taskServer) getAllTasksHandler(w http.ResponseWriter, req *http.Reques
 func (ts *taskServer) deleteAllTasksHandler(w http.ResponseWriter, req *http.Request) {
 	log.Printf("handling delete all tasks at %s\n", req.URL.Path)
 
-	err := ts.store.DeleteAllTasks()
-	if err != nil {
+	if err := ts.store.DeleteAllTasks(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -114,8 +113,7 @@ func (ts *taskServer) deleteTaskHandler(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	err = ts.store.DeleteTask(id)
-	if err != nil {
+	if err = ts.store.DeleteTask(id); err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
@@ -134,7 +132,6 @@ func (ts *taskServer) tagHandler(w http.ResponseWriter, req *http.Request) {
 
 func (ts *taskServer) dueHandler(w http.ResponseWriter, req *http.Request) {
 	log.Printf("handling get tasks by due date at %s\n", req.URL.Path)
-
 
 	year, yearErr := strconv.Atoi(req.PathValue("year"))
 	month, monthErr := strconv.Atoi(req.PathValue("month"))

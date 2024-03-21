@@ -1,9 +1,9 @@
 package taskstore
 
 import (
+	"reflect"
 	"testing"
 	"time"
-	"reflect"
 )
 
 func TestCreateAndGet(t *testing.T) {
@@ -18,7 +18,7 @@ func TestCreateAndGet(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	if task.Id != id0 || task.Text != text || !reflect.DeepEqual(tags, task.Tags)|| task.Due != due {
+	if task.Id != id0 || task.Text != text || !reflect.DeepEqual(tags, task.Tags) || task.Due != due {
 		t.Errorf("\nexpect: id=%d, text=%s, tags=%#v, due=%v\nactual: id=%d, text=%s, tags=%#v, due=%v",
 			id0,
 			text,
