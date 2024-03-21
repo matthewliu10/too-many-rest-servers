@@ -22,9 +22,9 @@ func NewTaskServer() *taskServer {
 
 func (ts *taskServer) createTaskHandler(c *gin.Context) {
 	type TaskStructure struct {
-		Text string    `json:"text"`
-		Tags []string  `json:"tags"`
-		Due  time.Time `json:"due"`
+		Text string    `json:"text" binding:"required"`
+		Tags []string  `json:"tags" binding:"required"`
+		Due  time.Time `json:"due"  binding:"required"`
 	}
 
 	var task TaskStructure
@@ -52,7 +52,7 @@ func (ts *taskServer) deleteAllTasksHandler(c *gin.Context) {
 }
 
 func (ts *taskServer) getTaskHandler(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id")) // PRINT WHAT ID IS -------------------------------
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.String(http.StatusBadRequest, "invalid id")
 		return
