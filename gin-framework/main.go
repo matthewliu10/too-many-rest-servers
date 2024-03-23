@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
@@ -107,8 +106,8 @@ func main() {
 	router.DELETE("/task/", server.deleteAllTasksHandler)
 	router.GET("/task/:id", server.getTaskHandler)
 	router.DELETE("/task/:id", server.deleteTaskHandler)
-	router.GET("/tag/:tag/", server.tagHandler)
+	router.GET("/tag/:tag", server.tagHandler)
 	router.GET("/due/:year/:month/:day", server.dueHandler)
 
-	router.Run("localhost:" + os.Getenv("SERVERPORT"))
+	router.Run("localhost:8080")
 }
