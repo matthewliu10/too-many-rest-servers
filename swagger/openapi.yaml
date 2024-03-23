@@ -1,0 +1,209 @@
+openapi: 3.0.3
+info:
+  title: Sample REST Server
+  description: TODO
+  version: 1.0.0
+servers:
+  - url: https://example.com
+tags:
+  - name: task
+paths:
+  /task/:
+    post:
+      tags:
+        - task
+      summary: Create a new task
+      description: Create a new task with the data supplied. Returns the ID of the task.
+      operationId: createTask
+      requestBody:
+        description: Data for the new task
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestTask'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+        '400':
+          description: Invalid data supplied
+    get:
+      tags:
+        - task
+      summary: Retrieve all tasks
+      operationId: getAllTasks
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/taskList'
+    delete:
+      tags:
+        - task
+      summary: Delete all tasks
+      operationId: deleteAllTasks
+      responses:
+        '204':
+          description: Successful operation
+      
+  /task/{id}:
+    get:
+      tags:
+        - task
+      summary: Retrieve task by ID
+      operationId: getTask
+      parameters:
+        - name: id
+          in: path
+          description: ID of task
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task'
+        '400':
+          description: Invalid ID provided
+        '404':
+          description: Task not found
+    delete:
+      tags:
+        - task
+      summary: Delete task by ID
+      operationId: deleteTask
+      parameters:
+        - name: id
+          in: path
+          description: ID of task
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID provided
+        '404':
+          description: Task not found
+  /tag/{tagname}:
+    get:
+      tags:
+        - task
+      summary: Retrieve all tasks with a certain tag
+      operationId: getTasksByTag
+      parameters:
+        - name: tagname
+          in: path
+          description: Tags to filter by
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/taskList'
+              example: [
+                {id: 0, text: "Buy groceries", tags: ["high-priority", "to-do", "weekend"], due: "2024-03-29T12:00:00Z"},
+                {id: 3, text: "Walk dog", tags: ["high-priority", "daily"], due: "2024-03-29T12:00:00Z"},
+                {id: 10, text: "Workout", tags: ["high-priority", "daily", "exercise"], due: "2024-03-29T12:00:00Z"}
+              ]
+  /due/{year}/{month}/{day}:
+    get:
+      tags:
+        - task
+      summary: Retrieve all tasks with a certain due date
+      operationId: getByDueDate
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The year of the due date
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The month of the due date
+        - name: day
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The day of the due date
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/taskList'
+        '400':
+          description: Invalid input provided. Expect /due/<year>/<month>/<day>/
+components:
+  schemas:
+    task:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the task
+          example: 5
+        text:
+          type: string
+          description: Description of the task
+          example: "Buy groceries"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the task
+          example: ["medium-priority", "to-do", "weekend"]
+        due:
+          type: string
+          format: date-time
+          description: The date the task should be completed by
+          example: "2024-03-29T12:00:00Z"
+    taskList:
+      type: array
+      items:
+        $ref: '#/components/schemas/task'
+      example: [
+        {id: 0, text: "Buy groceries", tags: ["medium-priority", "to-do", "weekend"], due: "2024-03-29T12:00:00Z"},
+        {id: 3, text: "Walk dog", tags: ["high-priority", "daily"], due: "2024-03-29T12:00:00Z"},
+        {id: 10, text: "Workout", tags: ["high-priority", "daily", "exercise"], due: "2024-03-29T12:00:00Z"}
+      ]
+    requestTask:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Description of the task
+          example: "Buy groceries"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the task
+          example: ["medium-priority", "to-do", "weekend"]
+        due:
+          type: string
+          format: date-time
+          description: The date the task should be completed by
+          example: "2024-03-29T12:00:00Z"
