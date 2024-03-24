@@ -31,8 +31,8 @@ func renderJSON(w http.ResponseWriter, data interface{}) {
 	w.Write(js)
 }
 
-func (ts *taskServer) createTaskHandler(w http.ResponseWriter, req *http.Request) {
-	log.Printf("handling create task at %s\n", req.URL.Path)
+func (ts *taskServer) createTaskHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handling create task at %s\n", r.URL.Path)
 
 	type TaskStructure struct {
 		Text string
@@ -44,7 +44,7 @@ func (ts *taskServer) createTaskHandler(w http.ResponseWriter, req *http.Request
 		Id int
 	}
 
-	contentType := req.Header.Get("Content-Type")
+	contentType := r.Header.Get("Content-Type")
 	mediaType, _, err := mime.ParseMediaType(contentType)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -55,7 +55,7 @@ func (ts *taskServer) createTaskHandler(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	decoder := json.NewDecoder(req.Body)
+	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	var taskStruct TaskStructure
 	if err := decoder.Decode(&taskStruct); err != nil {
@@ -67,16 +67,16 @@ func (ts *taskServer) createTaskHandler(w http.ResponseWriter, req *http.Request
 	renderJSON(w, Response{id})
 }
 
-func (ts *taskServer) getAllTasksHandler(w http.ResponseWriter, req *http.Request) {
-	log.Printf("handling get all tasks at %s\n", req.URL.Path)
+func (ts *taskServer) getAllTasksHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handling get all tasks at %s\n", r.URL.Path)
 
 	tasks := ts.store.GetAllTasks()
 
 	renderJSON(w, tasks)
 }
 
-func (ts *taskServer) deleteAllTasksHandler(w http.ResponseWriter, req *http.Request) {
-	log.Printf("handling delete all tasks at %s\n", req.URL.Path)
+func (ts *taskServer) deleteAllTasksHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handling delete all tasks at %s\n", r.URL.Path)
 
 	if err := ts.store.DeleteAllTasks(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -85,10 +85,10 @@ func (ts *taskServer) deleteAllTasksHandler(w http.ResponseWriter, req *http.Req
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (ts *taskServer) getTaskHandler(w http.ResponseWriter, req *http.Request) {
-	log.Printf("handling get task at %s\n", req.URL.Path)
+func (ts *taskServer) getTaskHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handling get task at %s\n", r.URL.Path)
 
-	id, err := strconv.Atoi(req.PathValue("id"))
+	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
@@ -103,10 +103,10 @@ func (ts *taskServer) getTaskHandler(w http.ResponseWriter, req *http.Request) {
 	renderJSON(w, task)
 }
 
-func (ts *taskServer) deleteTaskHandler(w http.ResponseWriter, req *http.Request) {
-	log.Printf("handling delete task at %s\n", req.URL.Path)
+func (ts *taskServer) deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handling delete task at %s\n", r.URL.Path)
 
-	id, err := strconv.Atoi(req.PathValue("id"))
+	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
@@ -120,21 +120,21 @@ func (ts *taskServer) deleteTaskHandler(w http.ResponseWriter, req *http.Request
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (ts *taskServer) tagHandler(w http.ResponseWriter, req *http.Request) {
-	log.Printf("handling get tasks by tag at %s\n", req.URL.Path)
+func (ts *taskServer) tagHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handling get tasks by tag at %s\n", r.URL.Path)
 
-	tag := req.PathValue("tag")
+	tag := r.PathValue("tag")
 	tasks := ts.store.GetTasksByTag(tag)
 
 	renderJSON(w, tasks)
 }
 
-func (ts *taskServer) dueHandler(w http.ResponseWriter, req *http.Request) {
-	log.Printf("handling get tasks by due date at %s\n", req.URL.Path)
+func (ts *taskServer) dueHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handling get tasks by due date at %s\n", r.URL.Path)
 
-	year, yearErr := strconv.Atoi(req.PathValue("year"))
-	month, monthErr := strconv.Atoi(req.PathValue("month"))
-	day, dayErr := strconv.Atoi(req.PathValue("day"))
+	year, yearErr := strconv.Atoi(r.PathValue("year"))
+	month, monthErr := strconv.Atoi(r.PathValue("month"))
+	day, dayErr := strconv.Atoi(r.PathValue("day"))
 	if yearErr != nil || monthErr != nil || dayErr != nil {
 		http.Error(w, "expect /due/<year>/<month>/<day>/", http.StatusBadRequest)
 		return
